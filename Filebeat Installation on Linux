@@ -1,0 +1,25 @@
+	1. When you are adding the new server in the ansible list or fresh filebeat installation
+	2. Import the Elastic GPG Key (run the following on the new server)
+		a. sudo rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+		
+	3. Create the YUM Repository File: run the following on the new server)
+		cat <<EOF | sudo tee /etc/yum.repos.d/elastic-8.x.repo
+		[elastic-8.x]
+		name=Elastic repository for 8.x packages
+		baseurl=https://artifacts.elastic.co/packages/8.x/yum
+		gpgcheck=1
+		gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+		enabled=1
+		autorefresh=1
+		type=rpm-md
+		EOF
+		
+		
+	4. Check if the repository was successfully added:
+		a. sudo yum repolist
+		repo name : elastic-8.x
+		
+	5. Install file beat or run the ansible:
+		a. yum install filebeat 
+		
+
