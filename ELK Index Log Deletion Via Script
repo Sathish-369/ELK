@@ -1,0 +1,49 @@
+How to delete the old logs out of a specific index 
+
+Try to save this query as a file with the “.sh” extension on the server.
+
+delete_old_data.sh
+#!/bin/bash
+#chnage the threshold value based on your need.
+THRESHOLD_DATE=$(date -d "30 days ago" "+%Y-%m-%dT%H:%M:%S")
+
+QUERY='{
+  "query": {
+    "range": {
+      "@timestamp": {
+        "lt": "'"${THRESHOLD_DATE}"'"
+      }
+    }
+  }
+}'
+
+curl -XPOST "<http://localhost:9200/<your_index_name>>/_delete_by_query" -H "Content-Type: application/json" -d "${QUERY}"
+
+#add the index name where we need to clear the log - <your_index_name>>
+# Eg: (curl -XPOST "http://localhost:9200/k8s-mtb-000002/_delete_by_query" -H "Content-Type: application/json" -d "${QUERY}")
+
+ 
+
+And run the script 
+
+bash delete_old_data.sh
+
+Await a while (hours or minutes). script may take some time to run depending on the volume of data, therefore always attempt to run the script when the Elk server's storage is more or manageable. If not, there may be a problem and the web-UI won't be able to continue collecting data from the server.
+
+Another, simpler method to run the command to remove the logs from the specified index in a single-line curl command is as follows:
+curl -XPOST "http://localhost:9200/k8s-mtb-000002/_delete_by_query" -H "Content-Type: application/json" -d '{"query": {"range": {"@timestamp": {"lt": "now-30d"}}}}'
+
+Multi-line command :
+curl -XPOST "http://localhost:9200/k8s-mtb-000002/_delete_by_query" -H "Content-Type: application/json" -d '{
+  "query": {
+    "range": {
+      "@timestamp": {
+        "lt": "now-60d"
+      }
+    }
+  }
+}'
+
+Paste the command into the terminal window.
+
+Press Enter to execute the command.
